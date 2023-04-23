@@ -2,12 +2,119 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + TS</title>
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="./src/stylesheets/style.css">
+    <title>L-Systems</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/modern-normalize@v1.1.0/modern-normalize.min.css" rel="stylesheet">
   </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+  <body class='min-h-screen max-h-screen w-full'>
+
+    <div class="flex flex-row justify-center items-center border-b border-black w-full" style="height:calc(var(--vh) * 7.5)">
+
+      <div class="flex w-full max-w-7xl h-full flex-row justify-center items-center mx-auto" style="height:calc(var(--vh) * 7.5)">
+        <button id="GenerateButton" class="flex justify-center items-center mx-4 active:scale-95"><img class="w-3/4 h-3/4" id="playPauseButton" src="/undo.svg"></button>
+        <button id="LSystemsButton" class="flex justify-center items-center mx-4 active:scale-95"><img class="w-3/4 h-3/4" src="/grid.svg"></button>
+        <button id="OutputButton" class="flex justify-center items-center mx-4 active:scale-95"><img class="w-3/4 h-3/4" src="/list.svg"></button>
+        <button id="HideButton" class="flex justify-center items-center mx-4 active:scale-95"><img class="w-3/4 h-3/4" src="/options.svg"></button>
+      </div>
+
+    </div>
+
+    <div id="fSettings" class="fixed z-10 bg-white flex flex-col justify-start content-start items-center w-full overflow-y-auto p-8" style="display:none;max-height:calc(var(--vh) * 92.5)">
+
+      <div class="my-4 flex flex-col">
+        <label for="fSettingsPresets" class="mx-auto">Load Preset:</label>
+        <select id="fSettingsPresets" class="border border-black rounded-lg p-2 m-2"></select>
+      </div>
+  
+      <div class="my-4 font-bold">Rendering</div>
+  
+      <div class="my-4 flex flex-col">
+        <label for="fSettingsCol" class="mx-auto">Colour:</label>
+        <input type="color" id="fSettingsCol" class="m-2">
+      </div>
+  
+      <div class="my-4 flex flex-col">
+        <label for="fSettingsVariance" class="mx-auto">Colour Variance:</label>
+        <input type="number" value="5" min="0" max="255" step="0.1" id="fSettingsVariance" class="text-center border border-black rounded-lg p-2 m-2">
+      </div>
+  
+      <div class="my-4 flex flex-col">
+        <label for="fSettingsAnimate" class="mx-auto">Animate:</label>
+        <input type="checkbox" id="fSettingsAnimate" checked class="mx-auto">
+      </div>
+  
+      <div class="my-4 flex flex-col">
+        <label for="fSettingsInterval" class="mx-auto">Animation Interval:</label>
+        <input type="number" min="10" max="1000" step="1" id="fSettingsInterval" value="10" class="text-center border border-black rounded-lg p-2 m-2">
+      </div>
+  
+      <div class="my-4 flex flex-col">
+        <label for="fSettingsLeaves" class="mx-auto">Leaves:</label>
+        <input type="checkbox" id="fSettingsLeaves" class="mx-auto border border-black rounded-lg p-2 m-2">
+      </div>
+  
+      <div class="my-4 flex flex-col">
+        <label for="fSettingsForest" class="mx-auto">Forest:</label>
+        <input type="checkbox" id="fSettingsForest" class="mx-auto border border-black rounded-lg p-2 m-2">
+      </div>
+  
+      <div class="my-4 font-bold">Dimensions</div>
+  
+      <div class="my-4 flex flex-col">
+        <label for="fSettingsCount" class="mx-auto">Count:</label>
+        <input type="number" min="1" max="25" step="1" id="fSettingsCount" value="5" class="text-center border border-black rounded-lg p-2 m-2">
+      </div>
+  
+      <div class="my-4 flex flex-col">
+        <label for="fSettingsLength" class="mx-auto">Starting Length:</label>
+        <input type="number" min="1" step="1" id="fSettingsLength" class="text-center border border-black rounded-lg p-2 m-2">
+      </div>
+  
+      <div class="my-4 flex flex-col">
+        <label for="fSettingsCanvas" class="mx-auto">Scale:</label>
+        <input type="number" min="1" step="1" id="fSettingsCanvas" class="text-center border border-black rounded-lg p-2 m-2">
+      </div>
+  
+      <div class="my-4 font-bold">Ruleset</div>
+  
+      <div class="my-4 flex flex-col">
+        <label for="fSettingsAxiom" class="mx-auto">Axiom:</label>
+        <textarea id="fSettingsAxiom" class="border border-black rounded-lg p-2 m-2"></textarea>
+      </div>
+  
+      <div class="my-4 flex flex-col">
+        <label for="fSettingsTheta" class="mx-auto">Theta:</label>
+        <input type="number" min="0" max="360" step="1" id="fSettingsTheta" class="text-center border border-black rounded-lg p-2 m-2">
+      </div>
+  
+      <div class="my-4 flex flex-col">
+        <label for="fSettingsIterations" class="mx-auto">Iterations:</label>
+        <input type="number" min="0" step="1" id="fSettingsIterations" class="text-center border border-black rounded-lg p-2 m-2">
+      </div>
+  
+      <label for="fSettingsReplacementDiv" class="my-4 font-bold">Replacement Rules</label>
+  
+      <div id="fSettingsReplacementDiv" class="flex flex-col justify-start items-center border border-black rounded-lg p-2 m-2">
+  
+      </div>
+  
+      <button id="fSettingsReplacementAdd" class="bg-white rounded-lg w-24 h-12 mx-auto my-4 active:scale-95 border border-black rounded-lg p-2 m-2">Add Rule</button>
+  
+    </div>
+  
+    <div id="fContainer" class="fixed w-full" style="min-height:calc(var(--vh) * 92.5)">
+      <div id="fView" class="fixed w-full" style="min-height:calc(var(--vh) * 92.5)">
+        <canvas id="fCanvas"></canvas>
+      </div>
+    </div>
+  
+    <div id="oView" class="z-10 bg-white flex flex-col justify-start content-start items-center w-full overflow-y-auto p-8" style="display:none;max-height:calc(var(--vh) * 92.5)">
+  
+    </div>
+
   </body>
+  <script type='module' src="./src/javascripts/main.ts"></script>
 </html>
